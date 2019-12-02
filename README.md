@@ -11,7 +11,7 @@ Working:
  
 WIP:
   - GUI (currently developing PAGE UI)
-  - Writing to cards (Please avoid using until labled __WORKING__
+  - Writing to cards (Please avoid using until labled "WORKING"
 ```
 # TO-DO
 MiPy-Classic is currently a standalone terminal-based software. I am planning on developing a proper GUI, along with the ability to use MiPy-Classic as a seperate python module.
