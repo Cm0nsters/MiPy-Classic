@@ -1,0 +1,43 @@
+#Sector Hex
+sec0 = ['\x00','\x01','\x02','\x03']
+sec1 = ['\x04','\x05','\x06','\x07']
+sec2 = ['\x08','\x09','\x0A','\x0B']
+sec3 = ['\x0C','\x0D','\x0E','\x0F']
+sec4 = ['\x10','\x11','\x12','\x13']
+sec5 = ['\x14','\x15','\x16','\x17']
+sec6 = ['\x18','\x19','\x1A','\x1B']
+sec7 = ['\x1C','\x1D','\x1E','\x1F']
+sec8 = ['\x20','\x21','\x22','\x23']
+sec9 = ['\x24','\x25','\x26','\x27']
+sec10 = ['\x28','\x29','\x2A','\x2B']
+sec11 = ['\x2C','\x2D','\x2E','\x2F']
+sec12 = ['\x30','\x31','\x31','\x33']
+sec13 = ['\x34','\x35','\x36','\x37']
+sec14 = ['\x38','\x39','\x3A','\x3B']
+sec15 = ['\x3C','\x3D','\x3E','\x3F']
+
+sec = [sec0,sec1,sec2,sec3,sec4,sec5,sec6,sec7,sec8,sec9,sec10,sec11,sec12,sec13,sec14,sec15]
+
+#Block Hex
+secblock0 = ['\x09','\x0A','\x0B','\x0C']
+secblock1 = ['\x0D','\x0E','\x0F','\x10']
+secblock2 = ['\x11','\x12','\x13','\x14']
+secblock3 = ['\x15','\x16','\x17','\x18']
+secblock4 = ['\x19','\x1A','\x1B','\x1C']
+secblock5 = ['\x1D','\x1E','\x1F','\x20']
+secblock6 = ['\x21','\x22','\x23','\x24']
+secblock7 = ['\x25','\x26','\x27','\x28']
+secblock8 = ['\x29','\x2A','\x2B','\x2C']
+secblock9 = ['\x2D','\x2E','\x2F','\x30']
+secblock10 = ['\x31','\x32','\x33','\x34']
+secblock11 = ['\x35','\x36','\x37','\x38']
+secblock12 = ['\x39','\x3A','\x3B','\x3C']
+secblock13 = ['\x3D','\x3E','\x3F','\x40']
+secblock14 = ['\x41','\x42','\x43','\x44']
+secblock15 = ['\x45','\x46','\x47','\x48']
+
+secblock = [secblock0,secblock1,secblock2,secblock3,secblock4,secblock5,secblock6,secblock7,secblock8,secblock9,secblock10,secblock11,secblock12,secblock13,secblock14,secblock15]
+
+#Read data
+secreadstart = ['\x00','\x01','\x02','\x03','\x04','\x05','\x06','\x07','\x08','\x09','\x0A','\x0B','\x0C','\x0D','\x0E','\x0F']
+secreadend = ['\x0C','\x0D','\x0E','\x0F','\x10','\x11','\x12','\x13','\x14','\x15','\x16','\x17','\x18','\x19','\x1A','\x1B']
