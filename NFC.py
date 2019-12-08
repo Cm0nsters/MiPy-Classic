@@ -83,6 +83,7 @@ def cardCheck():
     if check == NFCProt["no-card-found"]:
         print("No Card Found. Aborting...")
         ser.close()
+        exit()
     else:
         print("Card Found")
         time.sleep(0.25)
@@ -114,29 +115,21 @@ def manufacture():
 
 def readsector(sector=None,block=None):
     #Sector and Block Pick
-    sectorChoose =  CardSectorData.sec[sector]
-    blockChoose = CardSectorData.secreadblock[sector]
-    blockIDEnding = CardSectorData.seckeyend
-    blockIDMid = CardSectorData.seckeystart
-    byteread = bytearray()
-    bytekeygen1 = bytearray([0x0A,0x05])
-    bytekeygen2 = bytearray([0x03,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF])
-    bytekeygen = bytearray()
-    
-    #byteread
-    byteread.extend('\x03\x06'.encode('utf-8'))
-    byteread.extend(sectorChoose[block].encode('utf-8'))
-    byteread.extend(blockChoose[block].encode('utf-8'))
-    
-    #bytekeygen1
-    bytekeygen1.extend(blockIDMid[sector].encode('utf-8'))
-    
-    #bytekeygen2
-    bytekeygen2.extend(blockIDEnding[sector].encode('utf-8'))
+    #readbyte
+    readbyte = bytearray([0x03,0x06])
+    byte1 = CardSectorData.sec[sector]
+    byte2 = CardSectorData.secreadblock[sector]
+    readbyte.extend(byte1[block].encode('utf-8'))
+    readbyte.extend(byte2[block].encode('utf-8'))
 
-    #bytekeygen
-    bytekeygen.extend(bytekeygen1)
-    bytekeygen.extend(bytekeygen2)
+    #bytekey
+    bytekeyfinal = bytearray()
+    bytekey1 = bytearray([0x0A,0x05])
+    bytekey2 = bytearray([0x03,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF])
+    bytekey1.extend(CardSectorData.seckeystart[sector].encode('utf-8'))
+    bytekey2.extend(CardSectorData.seckeyend[sector].encode('utf-8'))
+    bytekeyfinal.extend(bytekey1)
+    bytekeyfinal.extend(bytekey2)
 
     #Beginning of card read
     serialOpen()
@@ -144,56 +137,45 @@ def readsector(sector=None,block=None):
     ser.write(NFCProt["starter"])
     ser.read(8)
     time.sleep(0.25)
-    ser.write(bytekeygen)
+    ser.write(bytekeyfinal)
     ser.read(3)
     time.sleep(0.25)
-    ser.write(byteread)
+    ser.write(readbyte)
     resp = ser.read(19)
     print(resp[3:])
     beep()
     ser.close()
 
 #DONT USE THIS COMMAND IT IS NOT FUNCTIONAL
-def writesector(sector=None,block=None,hexinput=None):
-    #Sector and Block Pick
-    sectorChoose =  CardSectorData.sec[sector]
-    blockChoose = CardSectorData.secwriteblock[sector]
-    blockIDEnding = CardSectorData.seckeyend
-    blockIDMid = CardSectorData.seckeystart
-    bytewrite = bytearray()
-    bytekeygen1 = bytearray([0x0A,0x05])
-    bytekeygen2 = bytearray([0x03,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF])
-    bytekeygen = bytearray()
-    
-    #bytewrite INVESTIGATE ISSUE OF SENDING \xC2 for no reason (possibly needs rewrite)
-    bytewrite.extend('\x13\x07'.encode('utf-8'))
-    bytewrite.extend(sectorChoose[block].encode('utf-8'))
-    bytewrite.extend('\x90\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x09'.encode('utf-8'))
-    bytewrite.extend(blockChoose[block].encode('utf-8'))
-    
-    #bytekeygen1
-    bytekeygen1.extend(blockIDMid[sector].encode('utf-8'))
-    
-    #bytekeygen2
-    bytekeygen2.extend(blockIDEnding[sector].encode('utf-8'))
+def writesector(sector=None,block=None,data=None):
+    #writebyte (THIS MAY NOT WORK AS A BYTEARRAY)
+    writebyte = bytearray([0x13,0x07])
+    byte1 = CardSectorData.sec[sector]
+    byte2 = CardSectorData.secwriteblock[sector]
+    writebyte.extend(byte1[block].encode('utf-8'))
+    writebyte.extend('\x90\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x09'.encode('utf-8'))
+    #THIS BYTE IS TBD
+    writebyte.extend(byte2[block].encode('utf-8'))
 
-    #bytekeygen
-    bytekeygen.extend(bytekeygen1)
-    bytekeygen.extend(bytekeygen2)
-
-
-    #WRITE PROCESS IS DECODED, BEGIN WRITING VARIABLES
+    #bytekey
+    bytekeyfinal = bytearray()
+    bytekey1 = bytearray([0x0A,0x05])
+    bytekey2 = bytearray([0x03,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF])
+    bytekey1.extend(CardSectorData.seckeystart[sector].encode('utf-8'))
+    bytekey2.extend(CardSectorData.seckeyend[sector].encode('utf-8'))
+    bytekeyfinal.extend(bytekey1)
+    bytekeyfinal.extend(bytekey2)
 
     serialOpen()
     cardCheck()
     ser.write(NFCProt["starter"])
-    #ser.read(8)
+    ser.read(8)
     time.sleep(0.25)
-    ser.write(bytekeygen)
+    ser.write(bytekeyfinal)
     time.sleep(0.25)
-    ser.write(bytewrite)
-    #ser.write(b'\x13\x07\x02\x90\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x09\xB5') #byte 3 and last byte
-    print(bytewrite)
+    ser.write(writebyte)
+    print(writebyte)
+    time.sleep(0.25)
     beep()
     ser.close()
 
@@ -225,8 +207,8 @@ while True:
     elif command == "sectorwrite":
         sect = input("Sector:")
         block = input("Block:")
-        #hexin = input("Hex:")
-        writesector(int(sect),int(block),None)
+        #data = input("Data:")
+        writesector(int(sect),int(block))
     elif command == "exit":
         print("Exiting...")
         break

@@ -38,6 +38,7 @@ secreadblock15 = ['\x45','\x46','\x47','\x48']
 
 secreadblock = [secreadblock0,secreadblock1,secreadblock2,secreadblock3,secreadblock4,secreadblock5,secreadblock6,secreadblock7,secreadblock8,secreadblock9,secreadblock10,secreadblock11,secreadblock12,secreadblock13,secreadblock14,secreadblock15]
 
+#INCORRECT - RE-EVALUATE PROTOCOL
 #Block Hex (WRITE ONLY)
 secwriteblock0 = ['\xB3','\xB4','\xB5','\xB6']
 secwriteblock1 = ['\xB7','\xB8','\xB9','\xBA']
