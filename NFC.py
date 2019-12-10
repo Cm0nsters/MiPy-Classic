@@ -5,6 +5,7 @@ from serial.tools import list_ports
 import io
 import time
 import CardSectorData
+import HelpList
 
 ser = serial.Serial()
 
@@ -73,9 +74,10 @@ def beeptest():
         print("Beep!")
         ser.close()
 
+#WIP, MAY BE BUGGY
 def passChange(key=None):
     global currentNFCKey
-    currentNFCKey = ''.join(key) #put code to manage key data
+    currentNFCKey = key
 
 def cardCheck():
     ser.write(NFCProt["card-check"])
@@ -125,7 +127,7 @@ def readsector(sector=None,block=None):
     #bytekey
     bytekeyfinal = bytearray()
     bytekey1 = bytearray([0x0A,0x05])
-    bytekey2 = bytearray([0x03,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF])
+    bytekey2 = bytearray(b'\x03%s' %currentNFCKey)
     bytekey1.extend(CardSectorData.seckeystart[sector].encode('utf-8'))
     bytekey2.extend(CardSectorData.seckeyend[sector].encode('utf-8'))
     bytekeyfinal.extend(bytekey1)
@@ -183,7 +185,9 @@ def writesector(sector=None,block=None,data=None):
 startCode()
 while True:
     command = input("Command:")
-    if command == "setdevice":
+    if command == "help":
+        HelpList.helpCommand()
+    elif command == "setdevice":
         device = input("Device Name:")
         setDevice(device)
     elif command == "devicename":
