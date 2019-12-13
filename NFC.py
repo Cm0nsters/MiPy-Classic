@@ -16,6 +16,8 @@ NFCProt = {
     "card-found": b'\x03\x02\x01\x06',
     "no-card-found": b'\x02\x01\x03',
     "manufacture-data": b'\x0A\x05\x00\x03\xFF\xFF\xFF\xFF\xFF\xFF\x0C',
+    "card-key-valid": b'\x02\x05\x07',
+    "write-success": b'\x02\x07\x09',
     #Starter has no known listing in the protocol. Will write proper name when ready
     "starter": b'\x03\x0A\x00\x0D'
 }
@@ -90,6 +92,15 @@ def cardCheck():
         print("Card Found")
         time.sleep(0.25)
 
+def keyCheck():
+    ser.write(currentNFCKey)
+    keyResp = ser.read(3)
+    if keyResp == NFCProt["card-key-valid"]:
+        pass
+    else:
+        print("This key is invalid!")
+        exit()
+
 def anticollision():
     serialOpen()
     cardCheck()
@@ -121,15 +132,15 @@ def readsector(sector=None,block=None):
     readbyte = bytearray([0x03,0x06])
     byte1 = CardSectorData.sec[sector]
     byte2 = CardSectorData.secreadblock[sector]
-    readbyte.extend(byte1[block].encode('utf-8'))
-    readbyte.extend(byte2[block].encode('utf-8'))
+    readbyte.extend(byte1[block])
+    readbyte.extend(byte2[block])
 
     #bytekey
     bytekeyfinal = bytearray()
     bytekey1 = bytearray([0x0A,0x05])
     bytekey2 = bytearray(b'\x03%s' %currentNFCKey)
-    bytekey1.extend(CardSectorData.seckeystart[sector].encode('utf-8'))
-    bytekey2.extend(CardSectorData.seckeyend[sector].encode('utf-8'))
+    bytekey1.extend(CardSectorData.seckeystart[sector])
+    bytekey2.extend(CardSectorData.seckeyend[sector])
     bytekeyfinal.extend(bytekey1)
     bytekeyfinal.extend(bytekey2)
 
@@ -154,17 +165,17 @@ def writesector(sector=None,block=None,data=None):
     writebyte = bytearray([0x13,0x07])
     byte1 = CardSectorData.sec[sector]
     byte2 = CardSectorData.secwriteblock[sector]
-    writebyte.extend(byte1[block].encode('utf-8'))
-    writebyte.extend('\x90\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x09'.encode('utf-8'))
+    writebyte.extend(byte1[block])
+    writebyte.extend(b'\x90\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x09')
     #THIS BYTE IS TBD
-    writebyte.extend(byte2[block].encode('utf-8'))
+    writebyte.extend(byte2[block])
 
     #bytekey
     bytekeyfinal = bytearray()
     bytekey1 = bytearray([0x0A,0x05])
     bytekey2 = bytearray([0x03,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF])
-    bytekey1.extend(CardSectorData.seckeystart[sector].encode('utf-8'))
-    bytekey2.extend(CardSectorData.seckeyend[sector].encode('utf-8'))
+    bytekey1.extend(CardSectorData.seckeystart[sector])
+    bytekey2.extend(CardSectorData.seckeyend[sector])
     bytekeyfinal.extend(bytekey1)
     bytekeyfinal.extend(bytekey2)
 
@@ -196,10 +207,13 @@ while True:
         beepControl()
     elif command == "beep":
         beeptest()
-    elif command == "keychange":
-        key = input("New Key:")
-        passChange(key)
-        print("New key set to: %s" % currentNFCKey)
+    elif command == "changekey":
+        print("Sorry! This feature is not yet implemented!")
+        #key = input("New Key:")
+        #passChange(key)
+        #print("New key set to: %s" % currentNFCKey)
+    elif command == "": #use for different key choices (key a or b)
+        pass
     elif command == "anticollision":
         anticollision()
     elif command == "manufacture":
@@ -217,4 +231,4 @@ while True:
         print("Exiting...")
         break
     else:
-        print("Command error! Invalid command!")
+        print("Invalid command! Use 'help' to get started")
