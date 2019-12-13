@@ -38,27 +38,6 @@ secreadblock15 = [b'\x45',b'\x46',b'\x47',b'\x48']
 
 secreadblock = [secreadblock0,secreadblock1,secreadblock2,secreadblock3,secreadblock4,secreadblock5,secreadblock6,secreadblock7,secreadblock8,secreadblock9,secreadblock10,secreadblock11,secreadblock12,secreadblock13,secreadblock14,secreadblock15]
 
-#INCORRECT - RE-EVALUATE PROTOCOL
-#Block Hex (WRITE ONLY)
-secwriteblock0 = [b'\xB3',b'\xB4',b'\xB5',b'\xB6']
-secwriteblock1 = [b'\xB7',b'\xB8',b'\xB9',b'\xBA']
-secwriteblock2 = [b'\xBB',b'\xBC',b'\xBD',b'\xBE']
-secwriteblock3 = [b'\xBF',b'\xC0',b'\xC1',b'\xC2']
-secwriteblock4 = [b'\xC3',b'\xC4',b'\xC5',b'\xC6']
-secwriteblock5 = [b'\xC7',b'\xC8',b'\xC9',b'\xCA']
-secwriteblock6 = [b'\xCB',b'\xCC',b'\xCD',b'\xCE']
-secwriteblock7 = [b'\xCF',b'\xD0',b'\xD1',b'\xD2']
-secwriteblock8 = [b'\xD3',b'\xD4',b'\xD5',b'\xD6']
-secwriteblock9 = [b'\xD7',b'\xD8',b'\xD9',b'\xDA']
-secwriteblock10 = [b'\xDB',b'\xDC',b'\xDD',b'\xDE']
-secwriteblock11 = [b'\xDF',b'\xE0',b'\xE1',b'\xE2']
-secwriteblock12 = [b'\xE3',b'\xE4',b'\xE5',b'\xE6']
-secwriteblock13 = [b'\xE7',b'\xE8',b'\xE9',b'\xEA']
-secwriteblock14 = [b'\xEB',b'\xEC',b'\xED',b'\xEE']
-secwriteblock15 = [b'\xEF',b'\xF0',b'\xF1',b'\xF2']
-
-secwriteblock = [secwriteblock0,secwriteblock1,secwriteblock2,secwriteblock3,secwriteblock4,secwriteblock5,secwriteblock6,secwriteblock7,secwriteblock8,secwriteblock9,secwriteblock10,secwriteblock11,secwriteblock12,secwriteblock13,secwriteblock14,secwriteblock15]
-
 #Key data
 seckeystart = [b'\x00',b'\x01',b'\x02',b'\x03',b'\x04',b'\x05',b'\x06',b'\x07',b'\x08',b'\x09',b'\x0A',b'\x0B',b'\x0C',b'\x0D',b'\x0E',b'\x0F']
 seckeyend = [b'\x0C',b'\x0D',b'\x0E',b'\x0F',b'\x10',b'\x11',b'\x12',b'\x13',b'\x14',b'\x15',b'\x16',b'\x17',b'\x18',b'\x19',b'\x1A',b'\x1B']

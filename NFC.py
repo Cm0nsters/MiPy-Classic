@@ -164,11 +164,8 @@ def writesector(sector=None,block=None,data=None):
     #writebyte (THIS MAY NOT WORK AS A BYTEARRAY)
     writebyte = bytearray([0x13,0x07])
     byte1 = CardSectorData.sec[sector]
-    byte2 = CardSectorData.secwriteblock[sector]
     writebyte.extend(byte1[block])
-    writebyte.extend(b'\x90\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x09')
-    #THIS BYTE IS TBD
-    writebyte.extend(byte2[block])
+    writebyte.extend(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
 
     #bytekey
     bytekeyfinal = bytearray()
@@ -181,14 +178,24 @@ def writesector(sector=None,block=None,data=None):
 
     serialOpen()
     cardCheck()
-    ser.write(NFCProt["starter"])
-    ser.read(8)
-    time.sleep(0.25)
-    ser.write(bytekeyfinal)
-    time.sleep(0.25)
-    ser.write(writebyte)
-    print(writebyte)
-    time.sleep(0.25)
+
+    #bruteforce write
+    start = 0
+    for i in range(256):
+        ser.write(NFCProt["starter"])
+        ser.read(8)
+        time.sleep(0.0625)
+        ser.write(bytekeyfinal)
+        time.sleep(0.0625)
+        writebyte.append(start)
+        ser.write(writebyte)
+        resp=ser.read(3)
+        print("%s returned %s" %(writebyte,resp))
+        start += 1
+        del writebyte[-1]
+        time.sleep(0.0625)
+    
+    print("Bruteforce Complete!")
     beep()
     ser.close()
 
