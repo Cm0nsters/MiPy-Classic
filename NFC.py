@@ -165,7 +165,7 @@ def writesector(sector=None,block=None,data=None):
     writebyte = bytearray([0x13,0x07])
     byte1 = CardSectorData.sec[sector]
     writebyte.extend(byte1[block])
-    writebyte.extend(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+    writebyte.extend(b'\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11')
 
     #bytekey
     bytekeyfinal = bytearray()
@@ -180,20 +180,20 @@ def writesector(sector=None,block=None,data=None):
     cardCheck()
 
     #bruteforce write
-    start = 0
+    byte2 = 0
     for i in range(256):
         ser.write(NFCProt["starter"])
         ser.read(8)
-        time.sleep(0.0625)
+        time.sleep(0.03125)
         ser.write(bytekeyfinal)
-        time.sleep(0.0625)
-        writebyte.append(start)
+        time.sleep(0.03125)
+        writebyte.append(byte2)
         ser.write(writebyte)
         resp=ser.read(3)
         print("%s returned %s" %(writebyte,resp))
         start += 1
         del writebyte[-1]
-        time.sleep(0.0625)
+        time.sleep(0.03125)
     
     print("Bruteforce Complete!")
     beep()

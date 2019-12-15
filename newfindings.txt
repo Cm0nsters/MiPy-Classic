@@ -1,0 +1,17 @@
+THIS DOCUMENT IS FOR REVERSE ENGINEERING WRITE PROTOCOL (Without Bruteforcing)
+
+writing s1b0 with 11111111111111111111111111111111 ends in 2e
+
+writing s1b0 with 11111111111111111111111111111112 ends in 2f
+
+writing s1b0 with 11111111111111111111111111111113 ends in 30
+
+writing s0b0 with 00000000000000000000000000000000 ends in 1a
+
+writing s0b1 with 00000000000000000000000000000000 ends in 1b
+
+writing s0b2 with 00000000000000000000000000000000 ends in 1c
+
+writing s0b2 with ffffffffffffffffffffffffffffffff ends in 0c
+
+writing s0b2 with aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ends in bc
