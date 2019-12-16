@@ -203,8 +203,8 @@ def writesector(sector=None,block=None,data=None):
 startCode()
 while True:
     command = input("Command:")
-    if command == "help":
-        HelpList.helpCommand()
+    if command[:5] == "help" or command[:5] == "help ":
+        HelpList.helpCommand(command[5:])
     elif command == "setdevice":
         device = input("Device Name:")
         setDevice(device)
