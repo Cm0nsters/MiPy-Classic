@@ -160,12 +160,18 @@ def readsector(sector=None,block=None):
     ser.close()
 
 #DONT USE THIS COMMAND IT IS NOT FUNCTIONAL
-def writesector(sector=None,block=None,data=None):
+def writesector(sector,block,data):
     #writebyte (THIS MAY NOT WORK AS A BYTEARRAY)
     writebyte = bytearray([0x13,0x07])
     byte1 = CardSectorData.sec[sector]
+    byte2 = 0
     writebyte.extend(byte1[block])
-    writebyte.extend(b'\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11')
+    
+    #write blank to card
+    if data == b'':
+        writebyte.extend(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+    else:
+        writebyte.extend(data)
 
     #bytekey
     bytekeyfinal = bytearray()
@@ -180,7 +186,6 @@ def writesector(sector=None,block=None,data=None):
     cardCheck()
 
     #bruteforce write
-    byte2 = 0
     for i in range(256):
         ser.write(NFCProt["starter"])
         ser.read(8)
@@ -191,7 +196,7 @@ def writesector(sector=None,block=None,data=None):
         ser.write(writebyte)
         resp=ser.read(3)
         print("%s returned %s" %(writebyte,resp))
-        start += 1
+        byte2 += 1
         del writebyte[-1]
         time.sleep(0.03125)
     
@@ -232,8 +237,8 @@ while True:
     elif command == "sectorwrite":
         sect = input("Sector:")
         block = input("Block:")
-        #data = input("Data:")
-        writesector(int(sect),int(block))
+        data = input("Data:")
+        writesector(int(sect),int(block),bytes(data.encode('utf-8')))
     elif command == "exit":
         print("Exiting...")
         break

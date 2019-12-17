@@ -18,5 +18,5 @@ helpCommandData = {
     "anticollision": "Prints anticollision",
     "manufacture": "Prints manufacture data of NFC Card",
     "sectorread": "Use to read data on card",
-    "sectorwrite": "Use to write data to card (BETA)"
+    "sectorwrite": "Use to write data to . Leave 'Data:' blank to clear data from block(BETA)"
 }
