@@ -12,7 +12,7 @@ Working:
  
 WIP:
   - GUI (currently developing PAGE UI)
-  - Writing to cards (Please avoid using until labled "WORKING")
+  - Writing to cards (BETA - Bruteforces final byte in write command)
 ```
 # Status
 Status of current and future planned works (Ranges from Final,Beta,Alpha,Not Implemented)
@@ -22,9 +22,9 @@ Detect Card - Final
 Terminal - Final(?)
 GUI - Beta
 Anticollision - Final
-Read manufacture data - Final
+Read manufacture data - Final(?)
 Read card - Final
-Write card - Alpha
+Write card - Beta
 Change used key - Not Implemented
 Change used key type - Not Implemented
 Change key on card - Not Implemented
@@ -36,7 +36,6 @@ MiPy-Classic is currently a standalone terminal-based software. I am planning on
 ```
 TO-DO:
  - Continue studies of write process
- - 
  - Develop UI
  - Develop standalone module
 ```

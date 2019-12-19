@@ -98,8 +98,7 @@ def keyCheck():
     if keyResp == NFCProt["card-key-valid"]:
         pass
     else:
-        print("This key is invalid!")
-        exit()
+        return print("This key is invalid!")
 
 def anticollision():
     serialOpen()
@@ -167,9 +166,11 @@ def writesector(sector,block,data):
     byte2 = 0
     writebyte.extend(byte1[block])
     
-    #write blank to card
+    #card data
     if data == b'':
         writebyte.extend(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+    elif len(data) > 16 or len(data) < 16:
+        return print("Invalid Formatting! Data needs to be 16 characters long!")
     else:
         writebyte.extend(data)
 
