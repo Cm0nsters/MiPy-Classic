@@ -21,7 +21,7 @@ except ImportError:
 
 import nfc_support
 
-import NFCGuiBackend
+import NFCBackend
 
 from tkinter import messagebox
 
@@ -108,7 +108,7 @@ class TopLevel:
         self.ButtonRead.configure(highlightcolor="black")
         self.ButtonRead.configure(pady="0")
         self.ButtonRead.configure(text='''Read''')
-        self.ButtonRead.configure(command=lambda: tk.messagebox.showinfo("Data from: S%sB%s" %(self.OptionSector.get(),self.OptionBlock.get()),NFCGuiBackend.readsector(int(self.OptionSector.get()),int(self.OptionBlock.get()))))
+        self.ButtonRead.configure(command=lambda: tk.messagebox.showinfo("Data from: S%sB%s" %(self.OptionSector.get(),self.OptionBlock.get()),NFCBackend.readsector(int(self.OptionSector.get()),int(self.OptionBlock.get()))))
         
         self.ButtonWrite = tk.Button(top)
         self.ButtonWrite.place(relx=0.56, rely=0.438, height=24, width=39)

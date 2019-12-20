@@ -158,7 +158,6 @@ def readsector(sector=None,block=None):
     beep()
     ser.close()
 
-#DONT USE THIS COMMAND IT IS NOT FUNCTIONAL
 def writesector(sector,block,data):
     #writebyte (THIS MAY NOT WORK AS A BYTEARRAY)
     writebyte = bytearray([0x13,0x07])

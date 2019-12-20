@@ -1,4 +1,4 @@
-#Update this to prevent code from auto converting certain hex to ascii (example is serial numer/anticollision)
+#FOR GUI USE ONLY
 
 import serial
 from serial.tools import list_ports
@@ -15,6 +15,8 @@ NFCProt = {
     "card-found": b'\x03\x02\x01\x06',
     "no-card-found": b'\x02\x01\x03',
     "manufacture-data": b'\x0A\x05\x00\x03\xFF\xFF\xFF\xFF\xFF\xFF\x0C',
+    "card-key-valid": b'\x02\x05\x07',
+    "write-success": b'\x02\x07\x09',
     #Starter has no known listing in the protocol. Will write proper name when ready
     "starter": b'\x03\x0A\x00\x0D'
 }
@@ -23,7 +25,6 @@ currentDevice = None
 connectedDevices = []
 currentNFCKey = b'\xFF\xFF\xFF\xFF\xFF\xFF'
 beepEnabled = 1
-data = None
 
 def startCode():
     print("WARNING: Not all data shown in console is accurate due to python and pyserial automatically converting some hex data")
@@ -74,9 +75,10 @@ def beeptest():
         print("Beep!")
         ser.close()
 
+#WIP, MAY BE BUGGY
 def passChange(key=None):
     global currentNFCKey
-    currentNFCKey = None #put code to manage key data
+    currentNFCKey = key
 
 def cardCheck():
     ser.write(NFCProt["card-check"])
@@ -84,9 +86,18 @@ def cardCheck():
     if check == NFCProt["no-card-found"]:
         print("No Card Found. Aborting...")
         ser.close()
+        exit()
     else:
         print("Card Found")
         time.sleep(0.25)
+
+def keyCheck():
+    ser.write(currentNFCKey)
+    keyResp = ser.read(3)
+    if keyResp == NFCProt["card-key-valid"]:
+        pass
+    else:
+        return "This key is invalid!"
 
 def anticollision():
     serialOpen()
@@ -99,7 +110,6 @@ def anticollision():
     ser.close()
 
 def manufacture():
-    global data
     serialOpen()
     cardCheck()
     ser.write(NFCProt["starter"])
@@ -110,36 +120,27 @@ def manufacture():
     time.sleep(0.25)
     ser.write(b'\x03\x06\x00\x09')
     resp = ser.read(19)
-    data = resp
     print(resp[3:])
     beep()
     ser.close()
 
 def readsector(sector=None,block=None):
     #Sector and Block Pick
-    sectorChoose =  CardSectorData.sec[sector]
-    blockChoose = CardSectorData.secblock[sector]
-    blockIDEnding = CardSectorData.secreadend
-    blockIDMid = CardSectorData.secreadstart
-    byteread = bytearray()
-    bytekeygen1 = bytearray([0x0A,0x05])
-    bytekeygen2 = bytearray([0x03,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF])
-    bytekeygen = bytearray()
-    
-    #byteread
-    byteread.extend('\x03\x06'.encode('utf-8'))
-    byteread.extend(sectorChoose[block].encode('utf-8'))
-    byteread.extend(blockChoose[block].encode('utf-8'))
-    
-    #bytekeygen1
-    bytekeygen1.extend(blockIDMid[sector].encode('utf-8'))
-    
-    #bytekeygen2
-    bytekeygen2.extend(blockIDEnding[sector].encode('utf-8'))
+    #readbyte
+    readbyte = bytearray([0x03,0x06])
+    byte1 = CardSectorData.sec[sector]
+    byte2 = CardSectorData.secreadblock[sector]
+    readbyte.extend(byte1[block])
+    readbyte.extend(byte2[block])
 
-    #bytekeygen
-    bytekeygen.extend(bytekeygen1)
-    bytekeygen.extend(bytekeygen2)
+    #bytekey
+    bytekeyfinal = bytearray()
+    bytekey1 = bytearray([0x0A,0x05])
+    bytekey2 = bytearray(b'\x03%s' %currentNFCKey)
+    bytekey1.extend(CardSectorData.seckeystart[sector])
+    bytekey2.extend(CardSectorData.seckeyend[sector])
+    bytekeyfinal.extend(bytekey1)
+    bytekeyfinal.extend(bytekey2)
 
     #Beginning of card read
     serialOpen()
@@ -147,54 +148,61 @@ def readsector(sector=None,block=None):
     ser.write(NFCProt["starter"])
     ser.read(8)
     time.sleep(0.25)
-    ser.write(bytekeygen)
+    ser.write(bytekeyfinal)
     ser.read(3)
     time.sleep(0.25)
-    ser.write(byteread)
+    ser.write(readbyte)
     resp = ser.read(19)
     print(resp[3:])
     beep()
     ser.close()
-    return resp[3:]
+    return resp
 
-#DONT USE THIS COMMAND IT IS NOT FUNCTIONAL
-def writesector(sector=None,block=None,hexinput=None):
-    resp = None
+def writesector(sector,block,data):
+    #writebyte (THIS MAY NOT WORK AS A BYTEARRAY)
+    writebyte = bytearray([0x13,0x07])
+    byte1 = CardSectorData.sec[sector]
+    byte2 = 0
+    writebyte.extend(byte1[block])
     
-    #Sector and Block Pick
-    blockIDEnding = CardSectorData.secreadend
-    blockIDMid = CardSectorData.secreadstart
-    bytekeygen1 = bytearray([0x0A,0x05])
-    bytekeygen2 = bytearray([0x03,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF])
-    bytekeygen = bytearray()
+    #card data
+    if data == b'':
+        writebyte.extend(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+    elif len(data) > 16 or len(data) < 16:
+        return "Invalid Formatting! Data needs to be 16 characters long!"
+    else:
+        writebyte.extend(data)
 
-    #bytekeygen1
-    bytekeygen1.extend(blockIDMid[sector].encode('utf-8'))
-    
-    #bytekeygen2
-    bytekeygen2.extend(blockIDEnding[sector].encode('utf-8'))
-
-    #bytekeygen
-    bytekeygen.extend(bytekeygen1)
-    bytekeygen.extend(bytekeygen2)
+    #bytekey
+    bytekeyfinal = bytearray()
+    bytekey1 = bytearray([0x0A,0x05])
+    bytekey2 = bytearray([0x03,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF])
+    bytekey1.extend(CardSectorData.seckeystart[sector])
+    bytekey2.extend(CardSectorData.seckeyend[sector])
+    bytekeyfinal.extend(bytekey1)
+    bytekeyfinal.extend(bytekey2)
 
     serialOpen()
     cardCheck()
-    ser.write(NFCProt["starter"])
-    resp = ser.read(8)
-    print(resp)
-    time.sleep(0.25)
-    ser.write(bytekeygen)
-    resp = ser.read(3)
-    print(resp)
-    time.sleep(0.25)
-    #Create code to change location of write and content of write
-    #Re-analyze protocol via ASPMon to find out how to write different text
-    ser.write(b'\x13\x07\x01\x90\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x09\xB4')
-    resp = ser.read(3)
-    print(resp)
+
+    #bruteforce write
+    for i in range(256):
+        ser.write(NFCProt["starter"])
+        ser.read(8)
+        time.sleep(0.03125)
+        ser.write(bytekeyfinal)
+        time.sleep(0.03125)
+        writebyte.append(byte2)
+        ser.write(writebyte)
+        resp=ser.read(3)
+        print("%s returned %s" %(writebyte,resp))
+        byte2 += 1
+        del writebyte[-1]
+        time.sleep(0.03125)
+    
+    print("Bruteforce Complete!")
     beep()
     ser.close()
+    return "Bruteforce Complete!"
 
-#Console CMD Runner
 startCode()
