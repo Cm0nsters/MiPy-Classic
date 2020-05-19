@@ -1,3 +1,7 @@
+THIS NOTE IS FOR USEFULL INFO ABOUT MIFARE KEYS
+https://stackoverflow.com/questions/19319069/mifare-1k-what-is-the-use-of-two-keys
+
+
 THIS DOCUMENT IS FOR REVERSE ENGINEERING WRITE PROTOCOL (Without Bruteforcing)
 
 writing s1b0 with 11111111111111111111111111111111 ends in 2e
