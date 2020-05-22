@@ -29,6 +29,7 @@ Change used key - Not Implemented
 Change used key type - Not Implemented
 Change key on card - Not Implemented
 Value Block - Not Implemented
+NDEF - Not Implemented (https://stackoverflow.com/questions/37220910/how-to-interpret-ndef-content-on-mifare-classic-1k)
 Standalone module - Not Implemented/Alpha
 ```
 # TO-DO
