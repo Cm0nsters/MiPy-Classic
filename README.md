@@ -1,5 +1,5 @@
 # MiPy-Classic
-## What is *MiPy-Classic*?
+## What is MiPy-Classic?
 MiPy is a tool designed for interacting with Mifare Classic 1K NFC chips using the M302 Reader/Writer
 ## Status and Functionality
 MiPy is still very much a Work-In-Progress, but already contains a competent set of tools to achieve basic functionality
