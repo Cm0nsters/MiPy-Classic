@@ -1,43 +1,35 @@
 # MiPy-Classic
-# What is _MiPy-Classic_?
-MiPy-Classic is a software designed for Mifare Classic 1K chips using an M302 NFC Reader/Writer
-# Functionality List
-MiPy-Classic is a WIP project, and I am currently cleaning up files and code.
+## What is *MiPy-Classic*?
+MiPy is a tool designed for interacting with Mifare Classic 1K NFC chips using the M302 Reader/Writer
+## Status and Functionality
+MiPy is still very much a Work-In-Progress, but already contains a competent set of tools to achieve basic functionality
+
+**NOTES:**
+ - Items marked WIP are still being developed
+ - More features may be added in the future and will be documented below
+
+**Full Feature List and Status**
 ```
-Working:
- - Reading anticollision data
- - Reading data from all sectors
- - Basic GUI (Must use PAGE UI)
- - Writing data to all sectors
- 
-WIP:
-  - GUI (currently developing PAGE UI)
-  - Writing to cards (BETA - Bruteforces final byte in write command)
-```
-# Status
-Status of current and future planned works (Ranges from Final,Beta,Alpha,Not Implemented)
-NOTE: More items may be added in the future
-```
-Detect Card - Final
-Terminal - Final(?)
-GUI - Beta
+Card Detection - Final
+CLI - WIP/Final (Still adding features, but functionable)
+GUI - Not Implemented (WIP/Alpha in previous V2 version)
 Anticollision - Final
-Read manufacture data - Final(?)
+Read manufacture data - Final (Functions with default key only)
 Read card - Final
-Write card - Beta
-Change used key - Not Implemented
-Change used key type - Not Implemented
-Change key on card - Not Implemented
-Value Block - Not Implemented
-NDEF - Not Implemented
-Standalone module - Not Implemented/Alpha
+Write card - WIP/Beta (Currently only supports bruteforcing the CRC)
+Change key - Not Implemented
+Change key type used - Not Implemented
+Change key of card - Not Implemented
+Value Blocks - Not Implemented
+NDEF Formatting - Not Implemented
+Module Support - WIP/Beta
 ```
-# TO-DO
-MiPy-Classic is currently a standalone terminal-based software. I am planning on developing a proper GUI, along with the ability to use MiPy-Classic as a seperate python module.
+## TO-DO
+MiPy supports CLI only, but a pre-included GUI is planned. Module support is also currently a WIP, but currently has basic functionality *(see NFC-Extenstion-Demo.py)*
 ```
 TO-DO:
- - Continue studies of write process
- - Study NDEF format on Mifare Classic platform (https://bit.ly/3bVet9s)
- - Develop UI
- - Develop standalone module
+ - Continue to reverse engineer write CRC
+ - Study NDEF format on Mifare Classic platform
+ - Develop GUI
+ - Continue Development of module support
 ```
