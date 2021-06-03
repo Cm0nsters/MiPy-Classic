@@ -157,7 +157,7 @@ def main():
                 print("Invalid Command!")
         elif command_tokens[0] == "write":
             try:
-                print(commands[command_tokens[0]](int(command_tokens[1]),int(command_tokens[2]),str(command_tokens[3])))
+                print(commands[command_tokens[0]](int(command_tokens[1]),int(command_tokens[2]),bytes(command_tokens[3].encode('utf-8'))))
             except KeyError:
                 print("Invalid Command!")
         else:
