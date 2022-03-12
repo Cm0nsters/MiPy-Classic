@@ -1,6 +1,5 @@
 import serial
 from serial.tools import list_ports
-import io
 import time
 
 class Reader:
@@ -82,7 +81,6 @@ class Reader:
         self.beep()
         return resp[3:]
 
-    #TODO - continue reverse engineering and development of writing
     def write_card(self,sector,block,data):
         writebyte = bytearray([0x13,0x07,int(hex((4*sector)+block),16)])
    
@@ -96,6 +94,7 @@ class Reader:
 
         self.card_check()
 
+        '''
         #bruteforce write
         for i in range(256):
             self.ser.write(self.nfc_protocol["starter"])
@@ -109,7 +108,28 @@ class Reader:
             print("%s returned %s" %(writebyte,resp))
             del writebyte[-1]
             time.sleep(self.delay)
-  
+        '''
+        
+        #checksum calc
+        checksum_bit = 0x1A
+        checksum += block
+        checksum += sector * 4
+        for i in data:
+            checksum_bit += i
+
+        while checksum_bit > 0xFF:
+            checksum_bit -= 0x100
+
+        #non-bruteforce write (FINISH WRITING)
+        self.ser.write(self.nfc_protocol["starter"])
+        self.ser.read(8)
+        time.sleep(self.delay)
+        self.ser.write(bytearray([0x0A,0x05,int(hex(sector),16),0x03,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,int(hex(sector+12),16)])) #final key
+        time.sleep(self.delay)
+        writebyte.append(checksum_bit)
+        self.ser.write(writebyte)
+        time.sleep(self.delay)
+
         print("Bruteforce Complete!")
         self.beep()
 
@@ -155,11 +175,15 @@ def main():
                 print(commands[command_tokens[0]](int(command_tokens[1]),int(command_tokens[2])))
             except KeyError:
                 print("Invalid Command!")
+            except IndexError:
+                print("Incomplete command!")
         elif command_tokens[0] == "write":
             try:
-                print(commands[command_tokens[0]](int(command_tokens[1]),int(command_tokens[2]),bytes(command_tokens[3].encode('utf-8'))))
+                commands[command_tokens[0]](int(command_tokens[1]),int(command_tokens[2]),bytes(command_tokens[3].encode('utf-8')))
             except KeyError:
                 print("Invalid Command!")
+            except IndexError:
+                print("Incomplete command!")
         else:
             try:
                 print(commands[command_tokens[0]]())

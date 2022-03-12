@@ -19,3 +19,5 @@ writing s0b2 with 00000000000000000000000000000000 ends in 1c
 writing s0b2 with ffffffffffffffffffffffffffffffff ends in 0c
 
 writing s0b2 with aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ends in bc
+
+theory: 1a + data parsed into bytes (ff) + block + sector (sector = 4 * sector num)
