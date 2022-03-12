@@ -29,6 +29,7 @@ class Reader:
     beep_enabled = 1
     delay = 0.03125
     card_key = None
+    blank_block = b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
 
     serial_close = lambda self: self.ser.close()
     manufacture = lambda self: self.read_card(0,0)
@@ -36,6 +37,7 @@ class Reader:
     def serial_open(self):
         self.ser.port = str(self.port)
         self.ser.baudrate = 9600
+        self.ser.timeout = 1
         self.ser.open()
 
     def beep(self):
@@ -63,10 +65,9 @@ class Reader:
         self.card_check()
         self.ser.write(self.nfc_protocol["anticollision"])
         time.sleep(self.delay)
-        resp = self.ser.read(8)
+        resp = self.ser.readall()
         self.beep()
-        return resp[3:]
-
+        return resp[-5:-1]
 
     def read_card(self,sector,block):
         self.card_check()
@@ -77,52 +78,38 @@ class Reader:
         self.ser.read(3)
         time.sleep(self.delay)
         self.ser.write(bytearray([0x03,0x06,int(hex((4*sector)+block),16),int(hex(9+(4*sector)+block),16)])) #read data
-        resp = self.ser.read(19)
+        resp = self.ser.readall()
         self.beep()
-        return resp[3:]
+        return resp[-17:-1]
 
-    def write_card(self,sector,block,data):
+    def write_card(self,sector,block,data=blank_block):
+        #TODO - finish comparing checksum implementation with testwrite.py
         writebyte = bytearray([0x13,0x07,int(hex((4*sector)+block),16)])
    
         #card data
-        if data == b"":
-            writebyte.extend(b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00")
-        elif len(data) != 16:
-            return print("Invalid Formatting! Data needs to be 16 characters long!")
-        else:
-            writebyte.extend(data)
+        if len(data) > 16:
+            return "Data longer than 16 char/hex!"
 
-        self.card_check()
-
-        '''
-        #bruteforce write
-        for i in range(256):
-            self.ser.write(self.nfc_protocol["starter"])
-            self.ser.read(8)
-            time.sleep(self.delay)
-            self.ser.write(bytearray([0x0A,0x05,int(hex(sector),16),0x03,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,int(hex(sector+12),16)])) #final key
-            time.sleep(self.delay)
-            writebyte.append(i)
-            self.ser.write(writebyte)
-            resp = self.ser.read(3)
-            print("%s returned %s" %(writebyte,resp))
-            del writebyte[-1]
-            time.sleep(self.delay)
-        '''
+        while len(data) < 16:
+            data += b"\x00"
+            print(data)
         
         #checksum calc
         checksum_bit = 0x1A
-        checksum += block
-        checksum += sector * 4
-        for i in data:
-            checksum_bit += i
+        checksum_bit += block
+        checksum_bit += sector * 4
+        for b in data:
+            checksum_bit += b
+            print(checksum_bit)
 
         while checksum_bit > 0xFF:
             checksum_bit -= 0x100
+        
+        print(hex(checksum_bit))
 
-        #non-bruteforce write (FINISH WRITING)
+        self.card_check()
         self.ser.write(self.nfc_protocol["starter"])
-        self.ser.read(8)
+        #self.ser.read(8)
         time.sleep(self.delay)
         self.ser.write(bytearray([0x0A,0x05,int(hex(sector),16),0x03,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,int(hex(sector+12),16)])) #final key
         time.sleep(self.delay)
@@ -130,8 +117,10 @@ class Reader:
         self.ser.write(writebyte)
         time.sleep(self.delay)
 
-        print("Bruteforce Complete!")
         self.beep()
+        return "Write Complete!"
+
+
 
 def main():
     devices = [device.device for device in serial.tools.list_ports.comports()]
@@ -163,6 +152,8 @@ def main():
     #TODO - clean up command portion
     print("Enter \"help\" for a list of commands")
     while True:
+        nfc_reader.ser.reset_input_buffer()
+        nfc_reader.ser.reset_output_buffer()
         command_input = input("NFC> ").lower()
         command_tokens = command_input.split()
         if command_tokens[0] == "exit":
@@ -179,7 +170,7 @@ def main():
                 print("Incomplete command!")
         elif command_tokens[0] == "write":
             try:
-                commands[command_tokens[0]](int(command_tokens[1]),int(command_tokens[2]),bytes(command_tokens[3].encode('utf-8')))
+                print(commands[command_tokens[0]](int(command_tokens[1]),int(command_tokens[2]),bytes(command_tokens[3].encode('utf-8'))))
             except KeyError:
                 print("Invalid Command!")
             except IndexError:
@@ -189,6 +180,8 @@ def main():
                 print(commands[command_tokens[0]]())
             except KeyError:
                 print("Invalid Command!")
+
+
 
 if __name__ == "__main__":
     main()
