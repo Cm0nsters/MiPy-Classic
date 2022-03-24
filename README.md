@@ -11,12 +11,12 @@ MiPy is still very much a Work-In-Progress, but already contains a competent set
 **Full Feature List and Status**
 ```
 Card Detection - Final
-CLI - WIP/Final (Still adding features, but functionable)
+CLI - WIP/Final (Still adding features, currently rewriting, is functional?)
 GUI - Not Implemented (WIP/Alpha in previous V2 version)
 Anticollision - Final
-Read manufacture data - Final (Functions with default key only)
+Read manufacture data - Final (Functions with default key as of now)
 Read card - Final
-Write card - WIP/Beta (Currently only supports bruteforcing the CRC)
+Write card - Beta (No longer bruteforces checksum)
 Change key - Not Implemented
 Change key type used - Not Implemented
 Change key of card - Not Implemented
@@ -28,8 +28,7 @@ Module Support - WIP/Beta
 MiPy supports CLI only, but a pre-included GUI is planned. Module support is also currently a WIP, but currently has basic functionality *(see NFC-Extenstion-Demo.py)*
 ```
 TO-DO:
- - Continue to reverse engineer write CRC
  - Study NDEF format on Mifare Classic platform
  - Develop GUI
- - Continue Development of module support
+ - Continue conversion to support being an individual module
 ```
